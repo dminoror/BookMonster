@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ImageReader.Properties
+namespace BookMonster.Properties
 {
 
 

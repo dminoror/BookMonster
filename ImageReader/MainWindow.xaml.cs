@@ -16,7 +16,7 @@ using System.IO;
 using System.Windows.Threading;
 using System.Threading;
 
-namespace ImageReader
+namespace BookMonster
 {
     public partial class MainWindow : Window
     {
