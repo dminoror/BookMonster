@@ -226,55 +226,61 @@ namespace BookMonster
 
         private void window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (images == null)
-                return;
-            if (e.Key == Key.Right)
+            if (images != null)
             {
-                if (index < images.Length - 1)
+                if (e.Key == Key.Right)
                 {
-                    index += 1;
+                    if (index < images.Length - 1)
+                    {
+                        index += 1;
+                    }
+                    renderImage();
+                    loadFiles();
+                    return;
                 }
-                renderImage();
-                loadFiles();
+                else if (e.Key == Key.Left)
+                {
+                    if (index > 0)
+                    {
+                        index -= 1;
+                    }
+                    renderImage();
+                    loadFiles();
+                    return;
+                }
+                else if (e.Key == Key.Up)
+                {
+                    DirectoryInfo parent = currentFolder.Parent;
+                    DirectoryInfo[] folders = parent.GetDirectories();
+                    int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
+                    if (index == 0)
+                    {
+                        MessageBox.Show("這是第一個資料夾");
+                    }
+                    else
+                    {
+                        inputFolder(folders[index - 1]);
+                    }
+                    return;
+                }
+                else if (e.Key == Key.Down)
+                {
+                    DirectoryInfo parent = currentFolder.Parent;
+                    DirectoryInfo[] folders = parent.GetDirectories();
+                    int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
+                    if (index == folders.Length - 1)
+                    {
+                        MessageBox.Show("這是最後一個資料夾");
+                    }
+                    else
+                    {
+                        inputFolder(folders[index + 1]);
+                    }
+                    return;
+                }
             }
-            else if (e.Key == Key.Left)
-            {
-                if (index > 0)
-                {
-                    index -= 1;
-                }
-                renderImage();
-                loadFiles();
-            }
-            else if (e.Key == Key.Up)
-            {
-                DirectoryInfo parent = currentFolder.Parent;
-                DirectoryInfo[] folders = parent.GetDirectories();
-                int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
-                if (index == 0)
-                {
-                    MessageBox.Show("這是第一個資料夾");
-                }
-                else
-                {
-                    inputFolder(folders[index - 1]);
-                }
-            }
-            else if (e.Key == Key.Down)
-            {
-                DirectoryInfo parent = currentFolder.Parent;
-                DirectoryInfo[] folders = parent.GetDirectories();
-                int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
-                if (index == folders.Length - 1)
-                {
-                    MessageBox.Show("這是最後一個資料夾");
-                }
-                else
-                {
-                    inputFolder(folders[index + 1]);
-                }
-            }
-            else if (e.Key == Key.Escape)
+            
+            if (e.Key == Key.Escape)
             {
                 this.Close();
             }
