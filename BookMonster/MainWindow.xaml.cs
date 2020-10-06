@@ -35,8 +35,9 @@ namespace BookMonster
             window.Height = screen.Bounds.Height;
             app.MainWindow.WindowState = WindowState.Maximized;
             ulong memorySize = (ulong)Helper.getMemory();
-            
-            memoryLimit = (memorySize / 20);
+
+            memoryLimit = (memorySize / 10) / 2;
+            Console.WriteLine("memoryLimit = " + memoryLimit);
         }
 
         BitmapImage[] images;
@@ -125,7 +126,8 @@ namespace BookMonster
                     if (images[i] == null)
                     {
                         images[i] = readImage(i, currentFiles[i]);
-                        if (checkMemory()) {
+                        if (checkMemory())
+                        {
                             cleanMemory();
                             abortThread();
                         }
@@ -136,7 +138,8 @@ namespace BookMonster
                     if (images[i] == null)
                     {
                         images[i] = readImage(i, currentFiles[i]);
-                        if (checkMemory()) {
+                        if (checkMemory())
+                        {
                             cleanMemory();
                             abortThread();
                         }
@@ -183,6 +186,7 @@ namespace BookMonster
         bool checkMemory()
         {
             var memory = (ulong)GC.GetTotalMemory(true);
+            Console.WriteLine(memory);
             return memory > memoryLimit;
         }
         void cleanMemory()
@@ -195,9 +199,10 @@ namespace BookMonster
                     images[i] = null;
                     Console.WriteLine("remove index " + i);
                     var memory = (ulong)GC.GetTotalMemory(true);
-                    if (memory < memoryLimit) {
+                    if (memory < memoryLimit)
+                    {
                         Console.WriteLine("clean finish");
-                        return; 
+                        return;
                     }
                 }
             }
@@ -211,7 +216,7 @@ namespace BookMonster
                     if (memory < memoryLimit)
                     {
                         Console.WriteLine("clean finish");
-                        return; 
+                        return;
                     }
                 }
             }
@@ -279,7 +284,7 @@ namespace BookMonster
                     return;
                 }
             }
-            
+
             if (e.Key == Key.Escape)
             {
                 this.Close();

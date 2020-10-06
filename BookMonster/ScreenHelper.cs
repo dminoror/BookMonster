@@ -25,7 +25,7 @@ namespace BookMonster
             ObjectQuery wql = new ObjectQuery("SELECT * FROM Win32_OperatingSystem");
             ManagementObjectSearcher searcher = new ManagementObjectSearcher(wql);
             ManagementObjectCollection results = searcher.Get();
-            
+
             foreach (ManagementObject result in results)
             {
                 Console.WriteLine("Total Visible Memory: {0} KB", result["TotalVisibleMemorySize"]);

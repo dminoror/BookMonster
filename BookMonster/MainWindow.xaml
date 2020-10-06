@@ -9,7 +9,7 @@
         Title="MainWindow" Height="600" Width="800" Loaded="window_Loaded" KeyDown="window_KeyDown" Drop="window_Drop" Closed="window_Closed">
     <Grid Background="Black">
         <Image x:Name="imageMain" RenderOptions.BitmapScalingMode="Fant">
-            
+
         </Image>
     </Grid>
 </Window>

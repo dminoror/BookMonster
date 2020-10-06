@@ -17,8 +17,9 @@ namespace BookMonster
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             if (e.Args.Length > 0)
-            { 
-                openPath = e.Args[0]; 
+            {
+                openPath = e.Args[0];
+                //MessageBox.Show("openPath");
             }
         }
     }
