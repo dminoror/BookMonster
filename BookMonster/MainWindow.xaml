@@ -6,10 +6,43 @@
         xmlns:local="clr-namespace:BookMonster"
         mc:Ignorable="d"
         x:Name="window" AllowDrop="True"
-        Title="MainWindow" Height="600" Width="800" Loaded="window_Loaded" KeyDown="window_KeyDown" Drop="window_Drop" Closed="window_Closed">
+        Title="BookMonster" Height="600" Width="800" Loaded="window_Loaded" KeyDown="window_KeyDown" Drop="window_Drop" Closed="window_Closed">
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo ProgressState="Normal"/>
+    </Window.TaskbarItemInfo>
     <Grid Background="Black">
-        <Image x:Name="imageMain" RenderOptions.BitmapScalingMode="Fant">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="6*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Rectangle Grid.Column="0" Opacity="0" x:Name="leftSide">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Offset="0.0" Color="#7FFFFFFF"/>
+                            <GradientStop Offset="1.0" Color="Black"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle Grid.Column="2" Opacity="0" x:Name="rightSide">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="1,0.5" EndPoint="0,0.5">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Offset="0.0" Color="#7FFFFFFF"/>
+                            <GradientStop Offset="1.0" Color="Black"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+        </Grid>
+        <Border BorderThickness="1" BorderBrush="white" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Image x:Name="imageMain" RenderOptions.BitmapScalingMode="Fant" Stretch="Uniform" Width="Auto" Height="Auto">
 
-        </Image>
+            </Image>
+        </Border>
+        
     </Grid>
 </Window>

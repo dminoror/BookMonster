@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Windows.Threading;
 using System.Threading;
+using System.Windows.Media.Animation;
 
 namespace BookMonster
 {
@@ -68,7 +69,7 @@ namespace BookMonster
             }
         }
 
-        string[] imageExtension = { "jpg", "jpeg", "png", "gif", "bmp" };
+        string[] imageExtension = { "jpg", "jpeg", "png", "gif", "bmp", "jfif" };
         bool isImage(string extension)
         {
             extension = extension.ToLower();
@@ -90,6 +91,7 @@ namespace BookMonster
             currentFiles = folder.GetFiles();
             currentFiles = currentFiles.Where(f => isImage(f.Extension)).ToArray();
             index = Array.FindIndex(currentFiles, f => f.FullName == file.FullName);
+            if (index < 0) { index = 0; }
             currentFolder = folder;
             images = new BitmapImage[currentFiles.Length];
             abortThread();
@@ -227,6 +229,7 @@ namespace BookMonster
             if (index < images.Length && index >= 0)
                 imageMain.Source = images[index];
             this.Title = string.Format("{0} ({1} / {2})", currentFolder.Name, index + 1, images.Length);
+            this.TaskbarItemInfo.ProgressValue = (index + 1) / (double)images.Length;
         }
 
         private void window_KeyDown(object sender, KeyEventArgs e)
@@ -239,6 +242,20 @@ namespace BookMonster
                     {
                         index += 1;
                     }
+                    else
+                    {
+                        rightSide.BeginAnimation(UIElement.OpacityProperty, null);
+                        rightSide.Opacity = 1;
+                        var animation = new DoubleAnimation
+                        {
+                            To = 0,
+                            BeginTime = TimeSpan.FromSeconds(0),
+                            Duration = TimeSpan.FromSeconds(0.5),
+                            FillBehavior = FillBehavior.Stop
+                        };
+                        animation.Completed += (s, a) => rightSide.Opacity = 0;
+                        rightSide.BeginAnimation(UIElement.OpacityProperty, animation);
+                    }
                     renderImage();
                     loadFiles();
                     return;
@@ -248,6 +265,20 @@ namespace BookMonster
                     if (index > 0)
                     {
                         index -= 1;
+                    }
+                    else
+                    {
+                        leftSide.BeginAnimation(UIElement.OpacityProperty, null);
+                        leftSide.Opacity = 1;
+                        var animation = new DoubleAnimation
+                        {
+                            To = 0,
+                            BeginTime = TimeSpan.FromSeconds(0),
+                            Duration = TimeSpan.FromSeconds(0.5),
+                            FillBehavior = FillBehavior.Stop
+                        };
+                        animation.Completed += (s, a) => leftSide.Opacity = 0;
+                        leftSide.BeginAnimation(UIElement.OpacityProperty, animation);
                     }
                     renderImage();
                     loadFiles();
