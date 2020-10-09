@@ -1,0 +1,39 @@
+﻿<Window x:Class="BookMonster.HotKeySettingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BookMonster"
+        mc:Ignorable="d"
+        Title="設定熱鍵" Width="400" Height="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <ScrollViewer>
+            <StackPanel x:Name="stack">
+                <Grid Height="28">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="功能" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Text="第一熱鍵" TextAlignment="Center" Grid.Column="1" VerticalAlignment="Center"/>
+                    <TextBlock Text="第二熱鍵" TextAlignment="Center" Grid.Column="2" VerticalAlignment="Center"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="恢復預設" Margin="10" Click="Reset_Clicked"/>
+            <Button Content="取消" Margin="10" Grid.Column="1" Click="Cancel_Clicked"/>
+            <Button Content="確定" Margin="10" Grid.Column="2" Click="OK_Clicked" />
+        </Grid>
+    </Grid>
+</Window>

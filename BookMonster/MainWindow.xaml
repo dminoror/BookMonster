@@ -10,6 +10,11 @@
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo ProgressState="Normal"/>
     </Window.TaskbarItemInfo>
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="設定熱鍵" Click="HotKeySetting_Click"/>
+        </ContextMenu>
+    </Window.ContextMenu>
     <Grid Background="Black">
         <Grid>
             <Grid.ColumnDefinitions>

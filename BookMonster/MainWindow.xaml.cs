@@ -25,6 +25,9 @@ namespace BookMonster
         DirectoryInfo currentFolder;
         FileInfo[] currentFiles;
         ulong memoryLimit;
+
+        Savedata savedata = Savedata.shared;
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -234,101 +237,106 @@ namespace BookMonster
 
         private void window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (images != null)
+            EventType type = savedata.getEvent(e.Key);
+            switch (type)
             {
-                if (e.Key == Key.Right)
-                {
-                    if (index < images.Length - 1)
+                case EventType.PrevPage:
                     {
-                        index += 1;
-                    }
-                    else
-                    {
-                        rightSide.BeginAnimation(UIElement.OpacityProperty, null);
-                        rightSide.Opacity = 1;
-                        var animation = new DoubleAnimation
+                        if (images == null) return;
+                        if (index > 0)
                         {
-                            To = 0,
-                            BeginTime = TimeSpan.FromSeconds(0),
-                            Duration = TimeSpan.FromSeconds(0.5),
-                            FillBehavior = FillBehavior.Stop
-                        };
-                        animation.Completed += (s, a) => rightSide.Opacity = 0;
-                        rightSide.BeginAnimation(UIElement.OpacityProperty, animation);
-                    }
-                    renderImage();
-                    loadFiles();
-                    return;
-                }
-                else if (e.Key == Key.Left)
-                {
-                    if (index > 0)
-                    {
-                        index -= 1;
-                    }
-                    else
-                    {
-                        leftSide.BeginAnimation(UIElement.OpacityProperty, null);
-                        leftSide.Opacity = 1;
-                        var animation = new DoubleAnimation
+                            index -= 1;
+                        }
+                        else
                         {
-                            To = 0,
-                            BeginTime = TimeSpan.FromSeconds(0),
-                            Duration = TimeSpan.FromSeconds(0.5),
-                            FillBehavior = FillBehavior.Stop
-                        };
-                        animation.Completed += (s, a) => leftSide.Opacity = 0;
-                        leftSide.BeginAnimation(UIElement.OpacityProperty, animation);
+                            leftSide.BeginAnimation(UIElement.OpacityProperty, null);
+                            leftSide.Opacity = 1;
+                            var animation = new DoubleAnimation
+                            {
+                                To = 0,
+                                BeginTime = TimeSpan.FromSeconds(0),
+                                Duration = TimeSpan.FromSeconds(0.5),
+                                FillBehavior = FillBehavior.Stop
+                            };
+                            animation.Completed += (s, a) => leftSide.Opacity = 0;
+                            leftSide.BeginAnimation(UIElement.OpacityProperty, animation);
+                        }
+                        renderImage();
+                        loadFiles();
                     }
-                    renderImage();
-                    loadFiles();
-                    return;
-                }
-                else if (e.Key == Key.Up)
-                {
-                    DirectoryInfo parent = currentFolder.Parent;
-                    DirectoryInfo[] folders = parent.GetDirectories();
-                    int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
-                    if (index == 0)
+                    break;
+                case EventType.NextPage:
                     {
-                        MessageBox.Show("這是第一個資料夾");
+                        if (images == null) return;
+                        if (index < images.Length - 1)
+                        {
+                            index += 1;
+                        }
+                        else
+                        {
+                            rightSide.BeginAnimation(UIElement.OpacityProperty, null);
+                            rightSide.Opacity = 1;
+                            var animation = new DoubleAnimation
+                            {
+                                To = 0,
+                                BeginTime = TimeSpan.FromSeconds(0),
+                                Duration = TimeSpan.FromSeconds(0.5),
+                                FillBehavior = FillBehavior.Stop
+                            };
+                            animation.Completed += (s, a) => rightSide.Opacity = 0;
+                            rightSide.BeginAnimation(UIElement.OpacityProperty, animation);
+                        }
+                        renderImage();
+                        loadFiles();
                     }
-                    else
+                    break;
+                case EventType.PrevBook:
                     {
-                        inputFolder(folders[index - 1]);
+                        DirectoryInfo parent = currentFolder.Parent;
+                        DirectoryInfo[] folders = parent.GetDirectories();
+                        int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
+                        if (index == 0)
+                        {
+                            MessageBox.Show("這是第一個資料夾");
+                        }
+                        else
+                        {
+                            inputFolder(folders[index - 1]);
+                        }
                     }
-                    return;
-                }
-                else if (e.Key == Key.Down)
-                {
-                    DirectoryInfo parent = currentFolder.Parent;
-                    DirectoryInfo[] folders = parent.GetDirectories();
-                    int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
-                    if (index == folders.Length - 1)
+                    break;
+                case EventType.NextBook:
                     {
-                        MessageBox.Show("這是最後一個資料夾");
+                        DirectoryInfo parent = currentFolder.Parent;
+                        DirectoryInfo[] folders = parent.GetDirectories();
+                        int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
+                        if (index == folders.Length - 1)
+                        {
+                            MessageBox.Show("這是最後一個資料夾");
+                        }
+                        else
+                        {
+                            inputFolder(folders[index + 1]);
+                        }
                     }
-                    else
+                    break;
+                case EventType.Escape:
                     {
-                        inputFolder(folders[index + 1]);
+                        this.Close();
                     }
-                    return;
-                }
-            }
-
-            if (e.Key == Key.Escape)
-            {
-                this.Close();
-            }
-            else if (e.Key == Key.R)
-            {
-                loadFiles();
+                    break;
             }
         }
 
         private void window_Closed(object sender, EventArgs e)
         {
             abortThread();
+        }
+
+        private void HotKeySetting_Click(object sender, RoutedEventArgs e)
+        {
+            HotKeySettingWindow window = new HotKeySettingWindow();
+            window.ShowDialog();
         }
     }
 }
