@@ -13,9 +13,10 @@
     <Window.ContextMenu>
         <ContextMenu>
             <MenuItem Header="設定熱鍵" Click="HotKeySetting_Click"/>
+            <MenuItem Header="卷軸模式" x:Name="scrollModeChecked" Click="scrollMode_Clicked" IsCheckable="False"/>
         </ContextMenu>
     </Window.ContextMenu>
-    <Grid Background="Black">
+    <Grid Background="Black" x:Name="parentView">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -43,11 +44,14 @@
                 </Rectangle.Fill>
             </Rectangle>
         </Grid>
-        <Border BorderThickness="1" BorderBrush="white" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Border BorderThickness="1" BorderBrush="white" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="normalModeView">
             <Image x:Name="imageMain" RenderOptions.BitmapScalingMode="Fant" Stretch="Uniform" Width="Auto" Height="Auto">
 
             </Image>
         </Border>
-        
+        <ScrollViewer x:Name="scrollModeView">
+            <StackPanel x:Name="scroll">
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

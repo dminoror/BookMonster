@@ -78,6 +78,7 @@ namespace BookMonster
         }
 
         public HotKey[] hotkeys;
+        public bool scrollMode = false;
 
         public Savedata()
         {
@@ -101,13 +102,17 @@ namespace BookMonster
                 return false;
             }
             string jsonString = File.ReadAllText("savedata");
-            Savedata savedata = JsonConvert.DeserializeObject<Savedata>(jsonString);
-            if (savedata != null)
+            Savedata savedata;
+            try
             {
-                Savedata._shared = savedata;
-                return true;
+                savedata = JsonConvert.DeserializeObject<Savedata>(jsonString);
             }
-            return false;
+            catch (Exception ex)
+            {
+                return false;
+            }
+            Savedata._shared = savedata;
+            return true;
         }
 
         public HotKey[] initHotKeys()

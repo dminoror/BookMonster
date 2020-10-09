@@ -27,6 +27,11 @@ namespace BookMonster
         ulong memoryLimit;
 
         Savedata savedata = Savedata.shared;
+        public bool scrollMode
+        {
+            get { return savedata.scrollMode; }
+            set { savedata.scrollMode = value; }
+        }
         
         public MainWindow()
         {
@@ -42,9 +47,12 @@ namespace BookMonster
 
             memoryLimit = (memorySize / 10) / 2;
             Console.WriteLine("memoryLimit = " + memoryLimit);
+
+            setRendorMode(scrollMode);
         }
 
         BitmapImage[] images;
+        Image[] imageViews;
         int index = 0;
 
         private void window_Loaded(object sender, RoutedEventArgs e)
@@ -97,6 +105,7 @@ namespace BookMonster
             if (index < 0) { index = 0; }
             currentFolder = folder;
             images = new BitmapImage[currentFiles.Length];
+            setupScroll();
             abortThread();
             loadFiles();
         }
@@ -108,6 +117,7 @@ namespace BookMonster
             currentFolder = folder;
             currentFiles = currentFiles.Where(f => isImage(f.Extension)).ToArray();
             images = new BitmapImage[currentFiles.Length];
+            setupScroll();
             abortThread();
             loadFiles();
         }
@@ -178,7 +188,15 @@ namespace BookMonster
                 stream.Close();
                 bitmap.Freeze();
             }
-            if (index == this.index)
+            if (scrollMode)
+            {
+                int loadedIndex = index;
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    imageViews[loadedIndex].Source = images[loadedIndex];
+                }));
+            }
+            else if (index == this.index)
             {
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -190,6 +208,7 @@ namespace BookMonster
 
         bool checkMemory()
         {
+            return false;
             var memory = (ulong)GC.GetTotalMemory(true);
             Console.WriteLine(memory);
             return memory > memoryLimit;
@@ -229,10 +248,52 @@ namespace BookMonster
 
         void renderImage()
         {
-            if (index < images.Length && index >= 0)
-                imageMain.Source = images[index];
+            if (!scrollMode)
+            {
+                if (index < images.Length && index >= 0)
+                {
+                    imageMain.Source = images[index];
+                }
+            }
             this.Title = string.Format("{0} ({1} / {2})", currentFolder.Name, index + 1, images.Length);
             this.TaskbarItemInfo.ProgressValue = (index + 1) / (double)images.Length;
+        }
+
+        void setRendorMode(bool scrollMode)
+        {
+            this.scrollMode = scrollMode;
+            scrollModeChecked.IsChecked = scrollMode;
+            if (scrollMode)
+            {
+                normalModeView.Opacity = 0;
+                scrollModeView.Opacity = 1;
+                setupScroll();
+            }
+            else
+            {
+                normalModeView.Opacity = 1;
+                scrollModeView.Opacity = 0;
+                imageViews = null;
+                scroll.Children.Clear();
+                if (images != null && index < images.Length)
+                    imageMain.Source = images[index];
+            }
+        }
+        void setupScroll()
+        {
+            if (!scrollMode || images == null || images.Length == 0) { return; }
+            imageViews = new Image[images.Length];
+            for (int i = 0; i < images.Length; i++)
+            {
+                Image image = new Image();
+                RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
+                image.Stretch = Stretch.Uniform;
+                image.Width = parentView.ActualWidth;
+                image.Height = parentView.ActualHeight;
+                scroll.Children.Add(image);
+                imageViews[i] = image;
+                image.Source = images[i];
+            }
         }
 
         private void window_KeyDown(object sender, KeyEventArgs e)
@@ -242,7 +303,7 @@ namespace BookMonster
             {
                 case EventType.PrevPage:
                     {
-                        if (images == null) return;
+                        if (images == null || scrollMode) return;
                         if (index > 0)
                         {
                             index -= 1;
@@ -267,7 +328,7 @@ namespace BookMonster
                     break;
                 case EventType.NextPage:
                     {
-                        if (images == null) return;
+                        if (images == null || scrollMode) return;
                         if (index < images.Length - 1)
                         {
                             index += 1;
@@ -331,12 +392,18 @@ namespace BookMonster
         private void window_Closed(object sender, EventArgs e)
         {
             abortThread();
+            Savedata.save();
         }
 
         private void HotKeySetting_Click(object sender, RoutedEventArgs e)
         {
             HotKeySettingWindow window = new HotKeySettingWindow();
             window.ShowDialog();
+        }
+
+        private void scrollMode_Clicked(object sender, RoutedEventArgs e)
+        {
+            setRendorMode(!scrollMode);
         }
     }
 }
