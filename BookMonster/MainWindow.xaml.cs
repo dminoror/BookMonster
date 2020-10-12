@@ -80,27 +80,12 @@ namespace BookMonster
             }
         }
 
-        string[] imageExtension = { "jpg", "jpeg", "png", "gif", "bmp", "jfif" };
-        bool isImage(string extension)
-        {
-            extension = extension.ToLower();
-            foreach (string ext in imageExtension)
-            {
-                if (extension.Contains(ext))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         void inputFile(string filePath)
         {
             resetImages();
             FileInfo file = new FileInfo(filePath);
             DirectoryInfo folder = file.Directory;
-            currentFiles = folder.GetFiles();
-            currentFiles = currentFiles.Where(f => isImage(f.Extension)).ToArray();
+            currentFiles = folder.GetFiles().Where(f => f.Name.isImage()).OrderBy(f => f.Name.PadNumbers()).ToArray();
             index = Array.FindIndex(currentFiles, f => f.FullName == file.FullName);
             if (index < 0) { index = 0; }
             currentFolder = folder;
@@ -112,10 +97,9 @@ namespace BookMonster
         void inputFolder(DirectoryInfo folder)
         {
             resetImages();
-            currentFiles = folder.GetFiles();
             index = 0;
+            currentFiles = folder.GetFiles().Where(f => f.Name.isImage()).OrderBy(f => f.Name.PadNumbers()).ToArray();
             currentFolder = folder;
-            currentFiles = currentFiles.Where(f => isImage(f.Extension)).ToArray();
             images = new BitmapImage[currentFiles.Length];
             setupScroll();
             abortThread();

@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Management;
 using System.IO;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace BookMonster
 {
@@ -65,6 +66,8 @@ namespace BookMonster
         {
             get
             {
+                _shared = new Savedata();
+                return _shared;
                 if (_shared == null)
                 {
                     if (!Savedata.load())
@@ -92,6 +95,7 @@ namespace BookMonster
 
         static public void save()
         {
+            return;
             string jsonString = JsonConvert.SerializeObject(_shared);
             File.WriteAllText("savedata", jsonString);
         }
@@ -144,6 +148,23 @@ namespace BookMonster
         public static T[] DeepClone<T>(this T[] source) where T : ICloneable
         {
             return source.Select(item => (T)item.Clone()).ToArray();
+        }
+        public static string PadNumbers(this string input)
+        {
+            return Regex.Replace(input, "[0-9]+", match => match.Value.PadLeft(10, '0'));
+        }
+        static string[] imageExtension = { "jpg", "jpeg", "png", "gif", "bmp", "jfif" };
+        public static bool isImage(this string extension)
+        {
+            extension = extension.ToLower();
+            foreach (string ext in imageExtension)
+            {
+                if (extension.Contains(ext))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

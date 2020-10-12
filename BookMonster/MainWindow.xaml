@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:BookMonster"
         mc:Ignorable="d"
         x:Name="window" AllowDrop="True"
-        Title="BookMonster" Height="600" Width="800" Loaded="window_Loaded" KeyDown="window_KeyDown" Drop="window_Drop" Closed="window_Closed">
+        Title="BookMonster" Height="600" Width="800" Loaded="window_Loaded" Drop="window_Drop" Closed="window_Closed" PreviewKeyDown="window_KeyDown">
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo ProgressState="Normal"/>
     </Window.TaskbarItemInfo>
