@@ -82,6 +82,8 @@ namespace BookMonster
 
         public HotKey[] hotkeys;
         public bool scrollMode = false;
+        [JsonIgnore]
+        public bool needSave = false;
 
         public Savedata()
         {
@@ -96,11 +98,15 @@ namespace BookMonster
         static public void save()
         {
             return;
-            string jsonString = JsonConvert.SerializeObject(_shared);
-            File.WriteAllText("savedata", jsonString);
+            if (shared.needSave)
+            {
+                string jsonString = JsonConvert.SerializeObject(_shared);
+                File.WriteAllText("savedata", jsonString);
+            }
         }
         static public bool load()
         {
+            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
             if (!File.Exists("savedata"))
             {
                 return false;

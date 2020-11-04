@@ -16,6 +16,7 @@ using System.IO;
 using System.Windows.Threading;
 using System.Threading;
 using System.Windows.Media.Animation;
+using System.Diagnostics;
 
 namespace BookMonster
 {
@@ -24,7 +25,7 @@ namespace BookMonster
         App app = (App)App.Current;
         DirectoryInfo currentFolder;
         FileInfo[] currentFiles;
-        ulong memoryLimit;
+        long memoryLimit;
 
         Savedata savedata = Savedata.shared;
         public bool scrollMode
@@ -44,9 +45,8 @@ namespace BookMonster
             window.Height = screen.Bounds.Height;
             app.MainWindow.WindowState = WindowState.Maximized;
             ulong memorySize = (ulong)Helper.getMemory();
-
-            memoryLimit = (memorySize / 10) / 2;
-            Console.WriteLine("memoryLimit = " + memoryLimit);
+            memoryLimit = (long)memorySize / 2;
+            Console.WriteLine("Memory limit is {0} Mb", memoryLimit / 1024.0 / 1024.0);
 
             setRendorMode(scrollMode);
         }
@@ -189,12 +189,18 @@ namespace BookMonster
             }
             return bitmap;
         }
-
+        long currentMemoryUsage
+        {
+            get
+            {
+                Process currentProc = Process.GetCurrentProcess();
+                return currentProc.PrivateMemorySize64;
+            }
+        }
         bool checkMemory()
         {
-            return false;
-            var memory = (ulong)GC.GetTotalMemory(true);
-            Console.WriteLine(memory);
+            long memory = currentMemoryUsage;
+            Console.WriteLine("Current memory is {0} Mb", memory / 1024.0 / 1024.0);
             return memory > memoryLimit;
         }
         void cleanMemory()
@@ -206,7 +212,8 @@ namespace BookMonster
                 {
                     images[i] = null;
                     Console.WriteLine("remove index " + i);
-                    var memory = (ulong)GC.GetTotalMemory(true);
+                    GC.Collect();
+                    var memory = currentMemoryUsage;
                     if (memory < memoryLimit)
                     {
                         Console.WriteLine("clean finish");
@@ -220,7 +227,8 @@ namespace BookMonster
                 {
                     images[i] = null;
                     Console.WriteLine("remove index " + i);
-                    var memory = (ulong)GC.GetTotalMemory(true);
+                    GC.Collect();
+                    var memory = currentMemoryUsage;
                     if (memory < memoryLimit)
                     {
                         Console.WriteLine("clean finish");

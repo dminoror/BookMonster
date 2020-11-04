@@ -32,7 +32,7 @@ namespace BookMonster
                 var memory = (UInt64)result["TotalVisibleMemorySize"];
                 if (memory > 0)
                 {
-                    return memory;
+                    return memory * 1024;
                 }
             }
             return 0;

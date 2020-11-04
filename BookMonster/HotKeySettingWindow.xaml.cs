@@ -92,7 +92,7 @@ namespace BookMonster
         private void OK_Clicked(object sender, RoutedEventArgs e)
         {
             Savedata.shared.hotkeys = this.hotkeys;
-            Savedata.save();
+            Savedata.shared.needSave = true;
             this.Close();
         }
     }
