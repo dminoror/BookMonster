@@ -82,27 +82,29 @@ namespace BookMonster
 
         void inputFile(string filePath)
         {
+            abortThread();
             resetImages();
             FileInfo file = new FileInfo(filePath);
             DirectoryInfo folder = file.Directory;
-            currentFiles = folder.GetFiles().Where(f => f.Name.isImage()).OrderBy(f => f.Name.PadNumbers()).ToArray();
+            currentFiles = folder.getImageFiles().OrderByFileName().ToArray();
             index = Array.FindIndex(currentFiles, f => f.FullName == file.FullName);
             if (index < 0) { index = 0; }
             currentFolder = folder;
+            this.Title = currentFolder.Name;
             images = new BitmapImage[currentFiles.Length];
             setRendorMode(scrollMode);
-            abortThread();
             loadFiles();
         }
         void inputFolder(DirectoryInfo folder)
         {
+            abortThread();
             resetImages();
             index = 0;
-            currentFiles = folder.GetFiles().Where(f => f.Name.isImage()).OrderBy(f => f.Name.PadNumbers()).ToArray();
+            currentFiles = folder.getImageFiles().OrderByFileName().ToArray();
             currentFolder = folder;
+            this.Title = currentFolder.Name;
             images = new BitmapImage[currentFiles.Length];
             setRendorMode(scrollMode);
-            abortThread();
             loadFiles();
         }
 
@@ -164,10 +166,7 @@ namespace BookMonster
             if (readThread != null)
             {
                 forceAbort = true;
-                while (readThread != null)
-                {
-
-                }
+                readThread.Join();
                 forceAbort = false;
             }
         }
@@ -321,7 +320,6 @@ namespace BookMonster
             if (!scrollMode || images == null || images.Length == 0) { return; }
             scroll.Children.Clear();
             scroll.SetVerticalOffset(0);
-            this.Title = currentFolder.Name;
             imageViews = new Image[images.Length];
             for (int i = 0; i < images.Length; i++)
             {
@@ -394,7 +392,7 @@ namespace BookMonster
                 case EventType.PrevBook:
                     {
                         DirectoryInfo parent = currentFolder.Parent;
-                        DirectoryInfo[] folders = parent.GetDirectories();
+                        DirectoryInfo[] folders = parent.GetDirectories().Where(d => d.getImageFiles().Count() > 0).OrderByFileName().ToArray();
                         int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
                         if (index == 0)
                         {
@@ -409,7 +407,7 @@ namespace BookMonster
                 case EventType.NextBook:
                     {
                         DirectoryInfo parent = currentFolder.Parent;
-                        DirectoryInfo[] folders = parent.GetDirectories();
+                        DirectoryInfo[] folders = parent.GetDirectories().Where(d => d.getImageFiles().Count() > 0).OrderByFileName().ToArray();
                         int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
                         if (index == folders.Length - 1)
                         {

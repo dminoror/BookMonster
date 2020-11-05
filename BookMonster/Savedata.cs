@@ -116,15 +116,17 @@ namespace BookMonster
         {
             if (needSave)
             {
-                string jsonString = JsonConvert.SerializeObject(_shared);
-                string path = String.Format("{0}\\savedata", Environment.CurrentDirectory);
+                string jsonString = JsonConvert.SerializeObject(_shared); 
+                FileInfo file = new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                string path = String.Format("{0}\\savedata", file.Directory.FullName);
                 File.WriteAllText(path, jsonString);
                 needSave = false;
             }
         }
         static public bool load()
         {
-            string path = String.Format("{0}\\savedata", Environment.CurrentDirectory);
+            FileInfo file = new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string path = String.Format("{0}\\savedata", file.Directory.FullName);
             if (!File.Exists(path))
             {
                 return false;
@@ -189,6 +191,15 @@ namespace BookMonster
                 }
             }
             return false;
+        }
+
+        public static IEnumerable<FileInfo> getImageFiles(this DirectoryInfo folder)
+        {
+            return folder.GetFiles().Where(f => f.Name.isImage());
+        }
+        public static IOrderedEnumerable<T> OrderByFileName<T>(this IEnumerable<T> files) where T : FileSystemInfo
+        {
+            return files.OrderBy(f => f.Name.PadNumbers());
         }
     }
 }
