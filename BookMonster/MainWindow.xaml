@@ -49,7 +49,7 @@
 
             </Image>
         </Border>
-        <ScrollViewer x:Name="scrollModeView">
+        <ScrollViewer x:Name="scrollModeView" ScrollChanged="scrollModeView_Scrolled" PreviewMouseWheel="scroll_MouseWheel">
             <StackPanel x:Name="scroll">
             </StackPanel>
         </ScrollViewer>

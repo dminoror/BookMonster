@@ -82,6 +82,7 @@ namespace BookMonster
 
         public HotKey[] hotkeys;
         public bool scrollMode = false;
+        public int wheelSpeed = 5;
         [JsonIgnore]
         public bool needSave = false;
 

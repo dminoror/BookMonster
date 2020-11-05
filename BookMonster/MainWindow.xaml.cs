@@ -26,6 +26,7 @@ namespace BookMonster
         DirectoryInfo currentFolder;
         FileInfo[] currentFiles;
         long memoryLimit;
+        int minCache = 3;
 
         Savedata savedata = Savedata.shared;
         public bool scrollMode
@@ -47,13 +48,13 @@ namespace BookMonster
             ulong memorySize = (ulong)Helper.getMemory();
             memoryLimit = (long)memorySize / 2;
             Console.WriteLine("Memory limit is {0} Mb", memoryLimit / 1024.0 / 1024.0);
-
             setRendorMode(scrollMode);
         }
 
         BitmapImage[] images;
         Image[] imageViews;
-        int index = 0;
+        volatile bool forceAbort;
+        volatile int index = 0;
 
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -90,7 +91,7 @@ namespace BookMonster
             if (index < 0) { index = 0; }
             currentFolder = folder;
             images = new BitmapImage[currentFiles.Length];
-            setupScroll();
+            setRendorMode(scrollMode);
             abortThread();
             loadFiles();
         }
@@ -101,7 +102,7 @@ namespace BookMonster
             currentFiles = folder.GetFiles().Where(f => f.Name.isImage()).OrderBy(f => f.Name.PadNumbers()).ToArray();
             currentFolder = folder;
             images = new BitmapImage[currentFiles.Length];
-            setupScroll();
+            setRendorMode(scrollMode);
             abortThread();
             loadFiles();
         }
@@ -116,40 +117,41 @@ namespace BookMonster
         Thread readThread;
         void loadFiles()
         {
-            if (readThread != null) { return; }
-            Console.WriteLine("start thread");
+            if (readThread != null) 
+            {
+                return; 
+            }
+            forceAbort = false;
             readThread = new Thread(() =>
             {
-                for (int i = index; i < currentFiles.Length; i++)
+                while (true)
                 {
-                    if (images[i] == null)
+                    if (forceAbort) { break; }
+                    int loadingIndex = getNextLoadIndex(index);
+                    if (loadingIndex < 0) { break; }
+                    images[loadingIndex] = readImage(loadingIndex, currentFiles[loadingIndex]);
+                    if (checkMemory())
                     {
-                        images[i] = readImage(i, currentFiles[i]);
-                        if (checkMemory())
+                        cleanMemory();
+                        bool loadNext = false;
+                        for (int i = index; i < index + minCache; i++)
                         {
-                            cleanMemory();
-                            abortThread();
+                            if (i < images.Length && images[i] == null)
+                            {
+                                loadNext = true;
+                                break;
+                            }
                         }
+                        if (!loadNext)
+                            break;
                     }
                 }
-                for (int i = index - 1; i >= 0; i--)
-                {
-                    if (images[i] == null)
-                    {
-                        images[i] = readImage(i, currentFiles[i]);
-                        if (checkMemory())
-                        {
-                            cleanMemory();
-                            abortThread();
-                        }
-                    }
-                }
-                Console.WriteLine("end");
-                abortThread();
+                disposeThread();
             });
             readThread.Start();
         }
-        void abortThread()
+
+        void disposeThread()
         {
             if (readThread != null)
             {
@@ -157,6 +159,36 @@ namespace BookMonster
                 readThread = null;
                 thread.Abort();
             }
+        }
+        void abortThread()
+        {
+            if (readThread != null)
+            {
+                forceAbort = true;
+                while (readThread != null)
+                {
+
+                }
+                forceAbort = false;
+            }
+        }
+        int getNextLoadIndex(int currentIndex)
+        {
+            for (int i = currentIndex; i < currentFiles.Length; i++)
+            {
+                if (images[i] == null)
+                {
+                    return i;
+                }
+            }
+            for (int i = currentIndex - 1; i >= 0; i--)
+            {
+                if (images[i] == null)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         BitmapImage readImage(int index, FileInfo file)
@@ -206,11 +238,18 @@ namespace BookMonster
         void cleanMemory()
         {
             Console.WriteLine("start clean memory");
-            for (int i = 0; i < index - 1; i++)
+            for (int i = 0; i < index - minCache; i++)
             {
                 if (images[i] != null)
                 {
                     images[i] = null;
+                    if (scrollMode)
+                    {
+                        this.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            imageViews[i].Source = null;
+                        }));
+                    }
                     Console.WriteLine("remove index " + i);
                     GC.Collect();
                     var memory = currentMemoryUsage;
@@ -221,11 +260,18 @@ namespace BookMonster
                     }
                 }
             }
-            for (int i = images.Length - 1; i > index; i--)
+            for (int i = images.Length - 1; i > index + minCache; i--)
             {
                 if (images[i] != null)
                 {
                     images[i] = null;
+                    if (scrollMode)
+                    {
+                        this.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            imageViews[i].Source = null;
+                        }));
+                    }
                     Console.WriteLine("remove index " + i);
                     GC.Collect();
                     var memory = currentMemoryUsage;
@@ -274,6 +320,7 @@ namespace BookMonster
         void setupScroll()
         {
             if (!scrollMode || images == null || images.Length == 0) { return; }
+            scroll.Children.Clear();
             imageViews = new Image[images.Length];
             for (int i = 0; i < images.Length; i++)
             {
@@ -383,7 +430,7 @@ namespace BookMonster
 
         private void window_Closed(object sender, EventArgs e)
         {
-            abortThread();
+            disposeThread();
             Savedata.save();
         }
 
@@ -396,6 +443,26 @@ namespace BookMonster
         private void scrollMode_Clicked(object sender, RoutedEventArgs e)
         {
             setRendorMode(!scrollMode);
+        }
+
+        private void scrollModeView_Scrolled(object sender, ScrollChangedEventArgs e)
+        {
+            if (images != null && scrollMode)
+            {
+                int scrollIndex = (int)(scrollModeView.VerticalOffset / scroll.ActualHeight * images.Length);
+                if (scrollIndex != index)
+                {
+                    index = scrollIndex;
+                    loadFiles();
+                    Console.WriteLine("scrolled");
+                }
+            }
+        }
+
+        private void scroll_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            scrollModeView.ScrollToVerticalOffset(scrollModeView.VerticalOffset - e.Delta * savedata.wheelSpeed);
+            e.Handled = true;
         }
     }
 }
