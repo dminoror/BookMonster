@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookMonster"
         mc:Ignorable="d"
-        Title="設定熱鍵" Width="400" Height="400">
+        Title="設定" Width="400" Height="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -13,7 +13,28 @@
         </Grid.RowDefinitions>
         <ScrollViewer>
             <StackPanel x:Name="stack">
-                <Grid Height="28">
+                <Grid Height="84">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="24"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="滑鼠速度" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock Text="記憶體上限" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1"/>
+                    <TextBlock Text="最少快取量" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2"/>
+                    <TextBox x:Name="tbWheelSpeed" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox x:Name="tbCacheAmount" Grid.Row="1" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBox x:Name="tbMemoryLimit" Grid.Row="2" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="張" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="GB" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Grid>
+                <Grid Height="6" Background="LightGray"/>
+                <Grid Height="28" x:Name="gridHotkeysSection">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>

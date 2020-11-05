@@ -25,14 +25,16 @@ namespace BookMonster
         App app = (App)App.Current;
         DirectoryInfo currentFolder;
         FileInfo[] currentFiles;
-        long memoryLimit;
-        int minCache = 3;
 
         Savedata savedata = Savedata.shared;
         public bool scrollMode
         {
             get { return savedata.scrollMode; }
-            set { savedata.scrollMode = value; }
+            set 
+            { 
+                savedata.scrollMode = value;
+                savedata.needSave = true;
+            }
         }
         
         public MainWindow()
@@ -45,9 +47,6 @@ namespace BookMonster
             window.Width = screen.Bounds.Width;
             window.Height = screen.Bounds.Height;
             app.MainWindow.WindowState = WindowState.Maximized;
-            ulong memorySize = (ulong)Helper.getMemory();
-            memoryLimit = (long)memorySize / 2;
-            Console.WriteLine("Memory limit is {0} Mb", memoryLimit / 1024.0 / 1024.0);
             setRendorMode(scrollMode);
         }
 
@@ -134,7 +133,7 @@ namespace BookMonster
                     {
                         cleanMemory();
                         bool loadNext = false;
-                        for (int i = index; i < index + minCache; i++)
+                        for (int i = index; i < index + savedata.minCacheAmount; i++)
                         {
                             if (i < images.Length && images[i] == null)
                             {
@@ -233,12 +232,12 @@ namespace BookMonster
         {
             long memory = currentMemoryUsage;
             Console.WriteLine("Current memory is {0} Mb", memory / 1024.0 / 1024.0);
-            return memory > memoryLimit;
+            return memory > savedata.memoryLimitBytes;
         }
         void cleanMemory()
         {
             Console.WriteLine("start clean memory");
-            for (int i = 0; i < index - minCache; i++)
+            for (int i = 0; i < index - savedata.minCacheAmount; i++)
             {
                 if (images[i] != null)
                 {
@@ -253,14 +252,14 @@ namespace BookMonster
                     Console.WriteLine("remove index " + i);
                     GC.Collect();
                     var memory = currentMemoryUsage;
-                    if (memory < memoryLimit)
+                    if (memory < savedata.memoryLimitBytes)
                     {
                         Console.WriteLine("clean finish");
                         return;
                     }
                 }
             }
-            for (int i = images.Length - 1; i > index + minCache; i--)
+            for (int i = images.Length - 1; i > index + savedata.minCacheAmount; i--)
             {
                 if (images[i] != null)
                 {
@@ -275,7 +274,7 @@ namespace BookMonster
                     Console.WriteLine("remove index " + i);
                     GC.Collect();
                     var memory = currentMemoryUsage;
-                    if (memory < memoryLimit)
+                    if (memory < savedata.memoryLimitBytes)
                     {
                         Console.WriteLine("clean finish");
                         return;
@@ -321,6 +320,8 @@ namespace BookMonster
         {
             if (!scrollMode || images == null || images.Length == 0) { return; }
             scroll.Children.Clear();
+            scroll.SetVerticalOffset(0);
+            this.Title = currentFolder.Name;
             imageViews = new Image[images.Length];
             for (int i = 0; i < images.Length; i++)
             {
@@ -430,8 +431,8 @@ namespace BookMonster
 
         private void window_Closed(object sender, EventArgs e)
         {
+            Savedata.shared.save();
             disposeThread();
-            Savedata.save();
         }
 
         private void HotKeySetting_Click(object sender, RoutedEventArgs e)

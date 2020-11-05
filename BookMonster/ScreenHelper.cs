@@ -20,7 +20,7 @@ namespace BookMonster
             return screen;
         }
 
-        public static UInt64 getMemory()
+        public static double getMemoryGb()
         {
             ObjectQuery wql = new ObjectQuery("SELECT * FROM Win32_OperatingSystem");
             ManagementObjectSearcher searcher = new ManagementObjectSearcher(wql);
@@ -28,11 +28,10 @@ namespace BookMonster
 
             foreach (ManagementObject result in results)
             {
-                Console.WriteLine("Total Visible Memory: {0} KB", result["TotalVisibleMemorySize"]);
                 var memory = (UInt64)result["TotalVisibleMemorySize"];
                 if (memory > 0)
                 {
-                    return memory * 1024;
+                    return Math.Round(memory / 1024.0 / 1024.0);
                 }
             }
             return 0;

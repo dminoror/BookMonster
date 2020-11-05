@@ -12,7 +12,7 @@
     </Window.TaskbarItemInfo>
     <Window.ContextMenu>
         <ContextMenu>
-            <MenuItem Header="設定熱鍵" Click="HotKeySetting_Click"/>
+            <MenuItem Header="設定" Click="HotKeySetting_Click"/>
             <MenuItem Header="卷軸模式" x:Name="scrollModeChecked" Click="scrollMode_Clicked" IsCheckable="False"/>
         </ContextMenu>
     </Window.ContextMenu>

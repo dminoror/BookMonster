@@ -66,14 +66,13 @@ namespace BookMonster
         {
             get
             {
-                _shared = new Savedata();
-                return _shared;
                 if (_shared == null)
                 {
                     if (!Savedata.load())
                     {
                         _shared = new Savedata();
-                        save();
+                        _shared.needSave = true;
+                        _shared.save();
                     }
                 }
                 return _shared;
@@ -82,13 +81,30 @@ namespace BookMonster
 
         public HotKey[] hotkeys;
         public bool scrollMode = false;
-        public int wheelSpeed = 5;
+        public double wheelSpeed = 5;
+        public int minCacheAmount = 3;
+        private double _memoryLimit;
+        public double memoryLimit
+        {
+            get
+            {
+                return _memoryLimit;
+            }
+            set
+            {
+                _memoryLimit = value;
+                memoryLimitBytes = (long)(_memoryLimit * 1024.0 * 1024.0 * 1024.0);
+            }
+        }
         [JsonIgnore]
         public bool needSave = false;
+        [JsonIgnore]
+        public long memoryLimitBytes;
 
         public Savedata()
         {
             init();
+            memoryLimit = Helper.getMemoryGb() / 2;
         }
 
         public void init()
@@ -96,23 +112,24 @@ namespace BookMonster
             hotkeys = initHotKeys();
         }
 
-        static public void save()
+        public void save()
         {
-            return;
-            if (shared.needSave)
+            if (needSave)
             {
                 string jsonString = JsonConvert.SerializeObject(_shared);
-                File.WriteAllText("savedata", jsonString);
+                string path = String.Format("{0}\\savedata", Environment.CurrentDirectory);
+                File.WriteAllText(path, jsonString);
+                needSave = false;
             }
         }
         static public bool load()
         {
-            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            if (!File.Exists("savedata"))
+            string path = String.Format("{0}\\savedata", Environment.CurrentDirectory);
+            if (!File.Exists(path))
             {
                 return false;
             }
-            string jsonString = File.ReadAllText("savedata");
+            string jsonString = File.ReadAllText(path);
             Savedata savedata;
             try
             {

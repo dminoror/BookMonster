@@ -19,6 +19,12 @@ namespace BookMonster
                 Grid item = makeHotKeyItem(hotkey);
                 stack.Children.Add(item);
             }
+            tbWheelSpeed.Text = Savedata.shared.wheelSpeed.ToString("F1");
+            tbCacheAmount.Text = Savedata.shared.minCacheAmount.ToString();
+            tbMemoryLimit.Text = Savedata.shared.memoryLimit.ToString();
+            System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;
+            this.Left = point.X - this.Width / 2;
+            this.Top = point.Y - this.Height / 2;
         }
 
         Grid makeHotKeyItem(HotKey hotkey)
@@ -75,13 +81,17 @@ namespace BookMonster
 
         private void Reset_Clicked(object sender, RoutedEventArgs e)
         {
-            hotkeys = Savedata.shared.initHotKeys();
-            stack.Children.RemoveRange(1, hotkeys.Length);
+            Savedata newdata = new Savedata();
+            hotkeys = newdata.hotkeys;
+            stack.Children.RemoveRange(stack.Children.IndexOf(gridHotkeysSection) + 1, hotkeys.Length);
             foreach (HotKey hotkey in hotkeys)
             {
                 Grid item = makeHotKeyItem(hotkey);
                 stack.Children.Add(item);
             }
+            tbWheelSpeed.Text = newdata.wheelSpeed.ToString("F1");
+            tbCacheAmount.Text = newdata.minCacheAmount.ToString();
+            tbMemoryLimit.Text = newdata.memoryLimit.ToString();
         }
 
         private void Cancel_Clicked(object sender, RoutedEventArgs e)
@@ -91,8 +101,31 @@ namespace BookMonster
 
         private void OK_Clicked(object sender, RoutedEventArgs e)
         {
+            double wheelSpeed = 0;
+            if (!double.TryParse(tbWheelSpeed.Text, out wheelSpeed))
+            {
+                MessageBox.Show("滑鼠速度輸入有誤"); return;
+            }
+            if (wheelSpeed < 0.1)
+            {
+                MessageBox.Show("滑鼠速度太低"); return;
+            }
+            int cacheAmount = 0;
+            if (!int.TryParse(tbCacheAmount.Text, out cacheAmount) || cacheAmount < 0)
+            {
+                MessageBox.Show("最少快取量輸入有誤"); return;
+            }
+            double memoryLimit = 0;
+            if (!double.TryParse(tbMemoryLimit.Text, out memoryLimit) || memoryLimit < 0)
+            {
+                MessageBox.Show("記憶體上限輸入有誤"); return;
+            }
+            Savedata.shared.wheelSpeed = wheelSpeed;
+            Savedata.shared.minCacheAmount = cacheAmount;
+            Savedata.shared.memoryLimit = memoryLimit;
             Savedata.shared.hotkeys = this.hotkeys;
             Savedata.shared.needSave = true;
+            Savedata.shared.save();
             this.Close();
         }
     }
