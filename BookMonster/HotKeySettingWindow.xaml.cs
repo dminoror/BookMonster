@@ -100,6 +100,16 @@ namespace BookMonster
             this.Close();
         }
 
+        private void openOther_Clicked(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog dialog = new System.Windows.Forms.OpenFileDialog();
+            dialog.Filter = "執行檔 (*.exe)|*.exe";
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                tbOtherProgram.Text = dialog.FileName;
+            }
+        }
+
         private void OK_Clicked(object sender, RoutedEventArgs e)
         {
             double wheelSpeed = 0;
@@ -121,7 +131,7 @@ namespace BookMonster
             {
                 MessageBox.Show("記憶體上限輸入有誤"); return;
             }
-            if (!File.Exists(tbOtherProgram.Text))
+            if (tbOtherProgram.Text.Length > 0 && !File.Exists(tbOtherProgram.Text))
             {
                 MessageBox.Show("看圖軟體路徑有誤"); return;
             }

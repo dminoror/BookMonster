@@ -18,7 +18,8 @@ namespace BookMonster
         PrevBook,
         NextBook,
         Escape,
-        OpenWith
+        OpenWith,
+        ScrollMode,
     }
 
     public struct HotKey : ICloneable
@@ -46,10 +47,12 @@ namespace BookMonster
                         return "上一本";
                     case EventType.NextBook:
                         return "上一本";
-                    case EventType.Escape:
-                        return "退出";
+                    case EventType.ScrollMode:
+                        return "卷軸模式";
                     case EventType.OpenWith:
                         return "啟動其他看圖軟體";
+                    case EventType.Escape:
+                        return "退出";
                 }
                 return String.Empty;
             }
@@ -156,8 +159,9 @@ namespace BookMonster
                 new HotKey(EventType.NextPage, new Key[] { Key.Right, Key.None }),
                 new HotKey(EventType.PrevBook, new Key[] { Key.Up, Key.None }),
                 new HotKey(EventType.NextBook, new Key[] { Key.Down ,Key.None }),
-                new HotKey(EventType.Escape, new Key[] { Key.Escape ,Key.None }),
-                new HotKey(EventType.OpenWith, new Key[] { Key.Q, Key.None } )
+                new HotKey(EventType.ScrollMode, new Key[] { Key.S, Key.None } ),
+                new HotKey(EventType.OpenWith, new Key[] { Key.Q, Key.None } ),
+                new HotKey(EventType.Escape, new Key[] { Key.Escape ,Key.None })
             };
             return hotkeys;
         }

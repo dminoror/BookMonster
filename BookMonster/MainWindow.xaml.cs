@@ -59,7 +59,6 @@ namespace BookMonster
         {
             if (app.openPath.Length > 0)
             {
-                MessageBox.Show(app.openPath);
                 inputFile(app.openPath);
                 loadFiles();
             }
@@ -320,7 +319,6 @@ namespace BookMonster
         {
             if (!scrollMode || images == null || images.Length == 0) { return; }
             scroll.Children.Clear();
-            scroll.SetVerticalOffset(0);
             imageViews = new Image[images.Length];
             for (int i = 0; i < images.Length; i++)
             {
@@ -333,6 +331,7 @@ namespace BookMonster
                 imageViews[i] = image;
                 image.Source = images[i];
             }
+            scrollModeView.ScrollToVerticalOffset(index * parentView.ActualHeight);
         }
 
         private void window_KeyDown(object sender, KeyEventArgs e)
@@ -456,7 +455,13 @@ namespace BookMonster
                             process.StartInfo.WorkingDirectory = currentFiles[index].DirectoryName;
                             process.StartInfo.UseShellExecute = true;
                             process.Start();
+                            abortThread();
                         }
+                    }
+                    break;
+                case EventType.ScrollMode:
+                    {
+                        scrollMode_Clicked(null, null);
                     }
                     break;
             }
@@ -488,7 +493,6 @@ namespace BookMonster
                 {
                     index = scrollIndex;
                     loadFiles();
-                    Console.WriteLine("scrolled");
                 }
             }
         }

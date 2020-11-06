@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookMonster"
         mc:Ignorable="d"
-        Title="設定" Width="400" Height="400">
+        Title="設定" Width="400" Height="480">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -25,9 +25,9 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="滑鼠速度" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBlock Text="記憶體上限" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1"/>
-                    <TextBlock Text="最少快取量" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2"/>
+                    <TextBlock Text="滑鼠滾動速度" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock Text="最少快取量" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1"/>
+                    <TextBlock Text="記憶體上限" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="2"/>
                     <TextBox x:Name="tbWheelSpeed" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBox x:Name="tbCacheAmount" Grid.Row="1" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBox x:Name="tbMemoryLimit" Grid.Row="2" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"/>
@@ -35,6 +35,7 @@
                     <TextBlock Grid.Row="2" Grid.Column="2" Text="GB" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <TextBlock Text="其他看圖軟體" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="3"/>
                     <TextBox x:Name="tbOtherProgram" Grid.Row="3" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <Button Grid.Row="3" Grid.Column="2" Content="..." Margin="4" Click="openOther_Clicked"/>
                 </Grid>
                 <Grid Height="6" Background="LightGray"/>
                 <Grid Height="28" x:Name="gridHotkeysSection">
