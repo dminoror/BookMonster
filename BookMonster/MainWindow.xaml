@@ -44,6 +44,33 @@
                 </Rectangle.Fill>
             </Rectangle>
         </Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="6*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Rectangle Grid.Row="0" Opacity="0" x:Name="upSide">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Offset="0.0" Color="#7FFFFFFF"/>
+                            <GradientStop Offset="1.0" Color="Black"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle Grid.Row="2" Opacity="0" x:Name="downSide">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0.5,1" EndPoint="0.5,0">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Offset="0.0" Color="#7FFFFFFF"/>
+                            <GradientStop Offset="1.0" Color="Black"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+        </Grid>
         <Border BorderThickness="1" BorderBrush="white" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="normalModeView">
             <Image x:Name="imageMain" RenderOptions.BitmapScalingMode="Fant" Stretch="Uniform" Width="Auto" Height="Auto">
 

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -120,9 +121,14 @@ namespace BookMonster
             {
                 MessageBox.Show("記憶體上限輸入有誤"); return;
             }
+            if (!File.Exists(tbOtherProgram.Text))
+            {
+                MessageBox.Show("看圖軟體路徑有誤"); return;
+            }
             Savedata.shared.wheelSpeed = wheelSpeed;
             Savedata.shared.minCacheAmount = cacheAmount;
             Savedata.shared.memoryLimit = memoryLimit;
+            Savedata.shared.otherProgramPath = tbOtherProgram.Text;
             Savedata.shared.hotkeys = this.hotkeys;
             Savedata.shared.needSave = true;
             Savedata.shared.save();

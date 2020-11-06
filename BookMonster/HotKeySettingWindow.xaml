@@ -13,13 +13,14 @@
         </Grid.RowDefinitions>
         <ScrollViewer>
             <StackPanel x:Name="stack">
-                <Grid Height="84">
+                <Grid Height="112">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="24"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
@@ -32,6 +33,8 @@
                     <TextBox x:Name="tbMemoryLimit" Grid.Row="2" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"/>
                     <TextBlock Grid.Row="1" Grid.Column="2" Text="張" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <TextBlock Grid.Row="2" Grid.Column="2" Text="GB" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock Text="其他看圖軟體" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="3"/>
+                    <TextBox x:Name="tbOtherProgram" Grid.Row="3" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"/>
                 </Grid>
                 <Grid Height="6" Background="LightGray"/>
                 <Grid Height="28" x:Name="gridHotkeysSection">

@@ -59,6 +59,7 @@ namespace BookMonster
         {
             if (app.openPath.Length > 0)
             {
+                MessageBox.Show(app.openPath);
                 inputFile(app.openPath);
                 loadFiles();
             }
@@ -396,7 +397,17 @@ namespace BookMonster
                         int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
                         if (index == 0)
                         {
-                            MessageBox.Show("這是第一個資料夾");
+                            upSide.BeginAnimation(UIElement.OpacityProperty, null);
+                            upSide.Opacity = 1;
+                            var animation = new DoubleAnimation
+                            {
+                                To = 0,
+                                BeginTime = TimeSpan.FromSeconds(0),
+                                Duration = TimeSpan.FromSeconds(0.5),
+                                FillBehavior = FillBehavior.Stop
+                            };
+                            animation.Completed += (s, a) => upSide.Opacity = 0;
+                            upSide.BeginAnimation(UIElement.OpacityProperty, animation);
                         }
                         else
                         {
@@ -411,7 +422,17 @@ namespace BookMonster
                         int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
                         if (index == folders.Length - 1)
                         {
-                            MessageBox.Show("這是最後一個資料夾");
+                            downSide.BeginAnimation(UIElement.OpacityProperty, null);
+                            downSide.Opacity = 1;
+                            var animation = new DoubleAnimation
+                            {
+                                To = 0,
+                                BeginTime = TimeSpan.FromSeconds(0),
+                                Duration = TimeSpan.FromSeconds(0.5),
+                                FillBehavior = FillBehavior.Stop
+                            };
+                            animation.Completed += (s, a) => downSide.Opacity = 0;
+                            downSide.BeginAnimation(UIElement.OpacityProperty, animation);
                         }
                         else
                         {
@@ -422,6 +443,20 @@ namespace BookMonster
                 case EventType.Escape:
                     {
                         this.Close();
+                    }
+                    break;
+                case EventType.OpenWith:
+                    {
+                        if (File.Exists(savedata.otherProgramPath))
+                        {
+                            string processPath = savedata.otherProgramPath;
+                            Process process = new Process();
+                            process.StartInfo.FileName = processPath;
+                            process.StartInfo.Arguments = currentFiles[index].Name;
+                            process.StartInfo.WorkingDirectory = currentFiles[index].DirectoryName;
+                            process.StartInfo.UseShellExecute = true;
+                            process.Start();
+                        }
                     }
                     break;
             }
