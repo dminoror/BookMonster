@@ -71,7 +71,7 @@
                 </Rectangle.Fill>
             </Rectangle>
         </Grid>
-        <Border BorderThickness="1" BorderBrush="white" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="normalModeView">
+        <Border BorderThickness="0" BorderBrush="white" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="normalModeView">
             <Image x:Name="imageMain" RenderOptions.BitmapScalingMode="Fant" Stretch="Uniform" Width="Auto" Height="Auto">
 
             </Image>
