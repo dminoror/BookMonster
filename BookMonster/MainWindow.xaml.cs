@@ -172,19 +172,25 @@ namespace BookMonster
         }
         int getNextLoadIndex(int currentIndex)
         {
-            for (int i = currentIndex; i < currentFiles.Length; i++)
+            for (int i = currentIndex; i < currentIndex + savedata.minCacheAmount + 1; i++)
             {
-                if (images[i] == null)
-                {
+                if (i < currentFiles.Length && images[i] == null)
                     return i;
-                }
             }
-            for (int i = currentIndex - 1; i >= 0; i--)
+            for (int i = currentIndex - 1; i >= currentIndex - savedata.minCacheAmount; i--)
+            {
+                if (i >= 0 && images[i] == null)
+                    return i;
+            }
+            for (int i = currentIndex + savedata.minCacheAmount; i < currentFiles.Length; i++)
             {
                 if (images[i] == null)
-                {
                     return i;
-                }
+            }
+            for (int i = currentIndex - savedata.minCacheAmount; i >= 0; i--)
+            {
+                if (images[i] == null)
+                    return i;
             }
             return -1;
         }
