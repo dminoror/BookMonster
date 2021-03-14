@@ -478,6 +478,28 @@ namespace BookMonster
                         scrollMode_Clicked(null, null);
                     }
                     break;
+                case EventType.Delete:
+                    {
+                        if (MessageBox.Show("確定要刪除嗎?", null, MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+                        {
+                            return;
+                        }
+                        FileInfo file = currentFiles[index];
+                        currentFiles = currentFiles.RemoveAt(index);
+                        images = images.RemoveAt(index);
+                        if (index > 0)
+                        {
+                            index -= 1;
+                        }
+                        file.Delete();
+                        if (scrollMode)
+                        {
+                            setupScroll();
+                        }
+                        renderImage();
+                        loadFiles();
+                    }
+                    break;
             }
         }
 

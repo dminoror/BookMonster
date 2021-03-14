@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,12 +11,12 @@ namespace BookMonster
     /// </summary>
     public partial class HotKeySettingWindow : Window
     {
-        HotKey[] hotkeys;
+        Dictionary<EventType, HotKey> hotkeys;
         public HotKeySettingWindow()
         {
             InitializeComponent();
-            hotkeys = (HotKey[])Savedata.shared.hotkeys.DeepClone();
-            foreach (HotKey hotkey in hotkeys)
+            hotkeys = (Dictionary<EventType, HotKey>)Savedata.shared.hotkeys.DeepClone();
+            foreach (HotKey hotkey in hotkeys.Values)
             {
                 Grid item = makeHotKeyItem(hotkey);
                 stack.Children.Add(item);
@@ -84,8 +85,8 @@ namespace BookMonster
         {
             Savedata newdata = new Savedata();
             hotkeys = newdata.hotkeys;
-            stack.Children.RemoveRange(stack.Children.IndexOf(gridHotkeysSection) + 1, hotkeys.Length);
-            foreach (HotKey hotkey in hotkeys)
+            stack.Children.RemoveRange(stack.Children.IndexOf(gridHotkeysSection) + 1, hotkeys.Values.Count);
+            foreach (HotKey hotkey in hotkeys.Values)
             {
                 Grid item = makeHotKeyItem(hotkey);
                 stack.Children.Add(item);

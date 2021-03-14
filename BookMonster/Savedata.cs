@@ -20,6 +20,7 @@ namespace BookMonster
         Escape,
         OpenWith,
         ScrollMode,
+        Delete,
     }
 
     public struct HotKey : ICloneable
@@ -53,6 +54,8 @@ namespace BookMonster
                         return "啟動其他看圖軟體";
                     case EventType.Escape:
                         return "退出";
+                    case EventType.Delete:
+                        return "刪除目前圖片";
                 }
                 return String.Empty;
             }
@@ -85,7 +88,8 @@ namespace BookMonster
             }
         }
 
-        public HotKey[] hotkeys;
+        //public HotKey[] hotkeys;
+        public Dictionary<EventType, HotKey> hotkeys;
         public bool scrollMode = false;
         public double wheelSpeed = 5;
         public int minCacheAmount = 3;
@@ -152,22 +156,28 @@ namespace BookMonster
             return true;
         }
 
-        public HotKey[] initHotKeys()
+        public Dictionary<EventType, HotKey> initHotKeys()
         {
-            HotKey[] hotkeys = new HotKey[] {
+            HotKey[] keys = new HotKey[] {
                 new HotKey(EventType.PrevPage, new Key[] { Key.Left, Key.None }),
                 new HotKey(EventType.NextPage, new Key[] { Key.Right, Key.None }),
                 new HotKey(EventType.PrevBook, new Key[] { Key.Up, Key.None }),
                 new HotKey(EventType.NextBook, new Key[] { Key.Down ,Key.None }),
                 new HotKey(EventType.ScrollMode, new Key[] { Key.S, Key.None } ),
                 new HotKey(EventType.OpenWith, new Key[] { Key.Q, Key.None } ),
-                new HotKey(EventType.Escape, new Key[] { Key.Escape ,Key.None })
+                new HotKey(EventType.Escape, new Key[] { Key.Escape ,Key.None }),
+                new HotKey(EventType.Delete, new Key[] { Key.Delete,Key.None })
             };
+            Dictionary<EventType, HotKey> hotkeys = new Dictionary<EventType, HotKey>();
+            foreach (HotKey key in keys)
+            {
+                hotkeys.Add(key.type, key);
+            }
             return hotkeys;
         }
         public EventType getEvent(Key input)
         {
-            foreach (HotKey hotkey in hotkeys)
+            foreach (HotKey hotkey in hotkeys.Values)
             {
                 if (hotkey.keys.Contains(input))
                 {
@@ -183,6 +193,21 @@ namespace BookMonster
         public static T[] DeepClone<T>(this T[] source) where T : ICloneable
         {
             return source.Select(item => (T)item.Clone()).ToArray();
+        }
+        public static T[] RemoveAt<T>(this T[] source, int index)
+        {
+            List<T> list = new List<T>(source);
+            list.RemoveAt(index);
+            return list.ToArray();
+        }
+        public static Dictionary<EventType, HotKey> DeepClone(this Dictionary<EventType, HotKey> source)
+        {
+            Dictionary<EventType, HotKey> newdict = new Dictionary<EventType, HotKey>();
+            foreach (HotKey key in source.Values)
+            {
+                newdict.Add(key.type, (HotKey)key.Clone());
+            }
+            return newdict;
         }
         public static string PadNumbers(this string input)
         {
