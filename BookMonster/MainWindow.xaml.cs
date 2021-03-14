@@ -201,12 +201,20 @@ namespace BookMonster
             BitmapImage bitmap = new BitmapImage();
             using (FileStream stream = new FileStream(file.FullName, FileMode.Open))
             {
-                bitmap.BeginInit();
-                bitmap.StreamSource = stream;
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                stream.Close();
-                bitmap.Freeze();
+                try
+                {
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = stream;
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    stream.Close();
+                    bitmap.Freeze();
+                }
+                catch(NotSupportedException)
+                {
+                    bitmap = new BitmapImage();
+                    bitmap.Freeze();
+                }
             }
             if (scrollMode)
             {
