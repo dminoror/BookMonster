@@ -348,110 +348,119 @@ namespace BookMonster
             scrollModeView.ScrollToVerticalOffset(index * parentView.ActualHeight);
         }
 
+        void prevPage()
+        {
+            if (images == null || scrollMode) return;
+            if (index > 0)
+            {
+                index -= 1;
+            }
+            else
+            {
+                leftSide.BeginAnimation(UIElement.OpacityProperty, null);
+                leftSide.Opacity = 1;
+                var animation = new DoubleAnimation
+                {
+                    To = 0,
+                    BeginTime = TimeSpan.FromSeconds(0),
+                    Duration = TimeSpan.FromSeconds(0.5),
+                    FillBehavior = FillBehavior.Stop
+                };
+                animation.Completed += (s, a) => leftSide.Opacity = 0;
+                leftSide.BeginAnimation(UIElement.OpacityProperty, animation);
+            }
+            renderImage();
+            loadFiles();
+        }
+        void nextPage()
+        {
+            if (images == null || scrollMode) return;
+            if (index < images.Length - 1)
+            {
+                index += 1;
+            }
+            else
+            {
+                rightSide.BeginAnimation(UIElement.OpacityProperty, null);
+                rightSide.Opacity = 1;
+                var animation = new DoubleAnimation
+                {
+                    To = 0,
+                    BeginTime = TimeSpan.FromSeconds(0),
+                    Duration = TimeSpan.FromSeconds(0.5),
+                    FillBehavior = FillBehavior.Stop
+                };
+                animation.Completed += (s, a) => rightSide.Opacity = 0;
+                rightSide.BeginAnimation(UIElement.OpacityProperty, animation);
+            }
+            renderImage();
+            loadFiles();
+        }
+        void prevBook()
+        {
+            DirectoryInfo parent = currentFolder.Parent;
+            DirectoryInfo[] folders = parent.GetDirectories().Where(d => d.getImageFiles().Count() > 0).OrderByFileName().ToArray();
+            int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
+            if (index == 0)
+            {
+                upSide.BeginAnimation(UIElement.OpacityProperty, null);
+                upSide.Opacity = 1;
+                var animation = new DoubleAnimation
+                {
+                    To = 0,
+                    BeginTime = TimeSpan.FromSeconds(0),
+                    Duration = TimeSpan.FromSeconds(0.5),
+                    FillBehavior = FillBehavior.Stop
+                };
+                animation.Completed += (s, a) => upSide.Opacity = 0;
+                upSide.BeginAnimation(UIElement.OpacityProperty, animation);
+            }
+            else
+            {
+                inputFolder(folders[index - 1]);
+            }
+        }
+        void nextBook()
+        {
+            DirectoryInfo parent = currentFolder.Parent;
+            DirectoryInfo[] folders = parent.GetDirectories().Where(d => d.getImageFiles().Count() > 0).OrderByFileName().ToArray();
+            int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
+            if (index == folders.Length - 1)
+            {
+                downSide.BeginAnimation(UIElement.OpacityProperty, null);
+                downSide.Opacity = 1;
+                var animation = new DoubleAnimation
+                {
+                    To = 0,
+                    BeginTime = TimeSpan.FromSeconds(0),
+                    Duration = TimeSpan.FromSeconds(0.5),
+                    FillBehavior = FillBehavior.Stop
+                };
+                animation.Completed += (s, a) => downSide.Opacity = 0;
+                downSide.BeginAnimation(UIElement.OpacityProperty, animation);
+            }
+            else
+            {
+                inputFolder(folders[index + 1]);
+            }
+        }
+
         private void window_KeyDown(object sender, KeyEventArgs e)
         {
             EventType type = savedata.getEvent(e.Key);
             switch (type)
             {
                 case EventType.PrevPage:
-                    {
-                        if (images == null || scrollMode) return;
-                        if (index > 0)
-                        {
-                            index -= 1;
-                        }
-                        else
-                        {
-                            leftSide.BeginAnimation(UIElement.OpacityProperty, null);
-                            leftSide.Opacity = 1;
-                            var animation = new DoubleAnimation
-                            {
-                                To = 0,
-                                BeginTime = TimeSpan.FromSeconds(0),
-                                Duration = TimeSpan.FromSeconds(0.5),
-                                FillBehavior = FillBehavior.Stop
-                            };
-                            animation.Completed += (s, a) => leftSide.Opacity = 0;
-                            leftSide.BeginAnimation(UIElement.OpacityProperty, animation);
-                        }
-                        renderImage();
-                        loadFiles();
-                    }
+                    prevPage();
                     break;
                 case EventType.NextPage:
-                    {
-                        if (images == null || scrollMode) return;
-                        if (index < images.Length - 1)
-                        {
-                            index += 1;
-                        }
-                        else
-                        {
-                            rightSide.BeginAnimation(UIElement.OpacityProperty, null);
-                            rightSide.Opacity = 1;
-                            var animation = new DoubleAnimation
-                            {
-                                To = 0,
-                                BeginTime = TimeSpan.FromSeconds(0),
-                                Duration = TimeSpan.FromSeconds(0.5),
-                                FillBehavior = FillBehavior.Stop
-                            };
-                            animation.Completed += (s, a) => rightSide.Opacity = 0;
-                            rightSide.BeginAnimation(UIElement.OpacityProperty, animation);
-                        }
-                        renderImage();
-                        loadFiles();
-                    }
+                    nextPage();
                     break;
                 case EventType.PrevBook:
-                    {
-                        DirectoryInfo parent = currentFolder.Parent;
-                        DirectoryInfo[] folders = parent.GetDirectories().Where(d => d.getImageFiles().Count() > 0).OrderByFileName().ToArray();
-                        int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
-                        if (index == 0)
-                        {
-                            upSide.BeginAnimation(UIElement.OpacityProperty, null);
-                            upSide.Opacity = 1;
-                            var animation = new DoubleAnimation
-                            {
-                                To = 0,
-                                BeginTime = TimeSpan.FromSeconds(0),
-                                Duration = TimeSpan.FromSeconds(0.5),
-                                FillBehavior = FillBehavior.Stop
-                            };
-                            animation.Completed += (s, a) => upSide.Opacity = 0;
-                            upSide.BeginAnimation(UIElement.OpacityProperty, animation);
-                        }
-                        else
-                        {
-                            inputFolder(folders[index - 1]);
-                        }
-                    }
+                    prevBook();
                     break;
                 case EventType.NextBook:
-                    {
-                        DirectoryInfo parent = currentFolder.Parent;
-                        DirectoryInfo[] folders = parent.GetDirectories().Where(d => d.getImageFiles().Count() > 0).OrderByFileName().ToArray();
-                        int index = Array.FindIndex(folders, folder => folder.FullName == currentFolder.FullName);
-                        if (index == folders.Length - 1)
-                        {
-                            downSide.BeginAnimation(UIElement.OpacityProperty, null);
-                            downSide.Opacity = 1;
-                            var animation = new DoubleAnimation
-                            {
-                                To = 0,
-                                BeginTime = TimeSpan.FromSeconds(0),
-                                Duration = TimeSpan.FromSeconds(0.5),
-                                FillBehavior = FillBehavior.Stop
-                            };
-                            animation.Completed += (s, a) => downSide.Opacity = 0;
-                            downSide.BeginAnimation(UIElement.OpacityProperty, animation);
-                        }
-                        else
-                        {
-                            inputFolder(folders[index + 1]);
-                        }
-                    }
+                    nextBook();
                     break;
                 case EventType.Escape:
                     {
@@ -537,6 +546,43 @@ namespace BookMonster
         {
             scrollModeView.ScrollToVerticalOffset(scrollModeView.VerticalOffset - e.Delta * savedata.wheelSpeed);
             e.Handled = true;
+        }
+
+        Point downPoint;
+        private void window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            downPoint = e.GetPosition(this.window);
+        }
+
+        private void window_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Point upPoint = e.GetPosition(this.window);
+            //Console.WriteLine("Dis X 座標：" + (upPoint.X - downPoint.X));
+            //Console.WriteLine("Dis Y 座標：" + (upPoint.Y - downPoint.Y));
+            double movedX = upPoint.X - downPoint.X;
+            double movedY = upPoint.Y - downPoint.Y;
+            if (Math.Abs(movedX) > Math.Abs(movedY))
+            {
+                if (movedX > 0)
+                {
+                    prevPage();
+                } 
+                else
+                {
+                    nextPage();
+                }
+            }
+            else
+            {
+                if (movedY > 0)
+                {
+                    prevBook();
+                }
+                else
+                {
+                    nextBook();
+                }
+            }
         }
     }
 }
